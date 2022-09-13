@@ -4,6 +4,7 @@ import 'package:hello_world/screen/about.dart';
 import 'package:hello_world/screen/basket.dart';
 import 'package:hello_world/screen/history.dart';
 import 'package:hello_world/screen/home.dart';
+import 'package:hello_world/screen/my_courses.dart';
 import 'package:hello_world/screen/search.dart';
 import 'package:hello_world/screen/studentlist.dart';
 
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         'about': (context) => About(),
         'basket': (context) => Basket(),
         'studentlist': (context) => StudentList(),
+        'mycourse': (context) => MyCourses(),
       },
     );
   }
@@ -136,6 +138,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
               Navigator.popAndPushNamed(context, 'studentlist');
             }),
+        ListTile(
+          title: Text("My Course"),
+          leading: Icon(Icons.star_outlined),
+          onTap: () {
+            Navigator.popAndPushNamed(context, 'mycourse');
+          },
+        )
       ]),
     );
   }
@@ -206,23 +215,24 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(_title[_currentIndex]),
-        ),
-        body: _screens[_currentIndex],
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
-        drawer: myDrawer(),
-        persistentFooterButtons: <Widget>[
-          ElevatedButton(
-              onPressed: () {}, child: const Icon(Icons.skip_previous)),
-          ElevatedButton(onPressed: () {}, child: const Icon(Icons.skip_next))
-        ],
-        bottomNavigationBar: myBottom());
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(_title[_currentIndex]),
+      ),
+      body: _screens[_currentIndex],
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
+      drawer: myDrawer(),
+      persistentFooterButtons: <Widget>[
+        ElevatedButton(
+            onPressed: () {}, child: const Icon(Icons.skip_previous)),
+        ElevatedButton(onPressed: () {}, child: const Icon(Icons.skip_next))
+      ],
+      bottomNavigationBar: myBottom(),
+    );
   }
 }
