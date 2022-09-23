@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:hello_world/screen/about.dart';
+import 'package:hello_world/screen/addrecipe.dart';
 import 'package:hello_world/screen/basket.dart';
 import 'package:hello_world/screen/history.dart';
 import 'package:hello_world/screen/home.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         'basket': (context) => Basket(),
         'studentlist': (context) => StudentList(),
         'mycourse': (context) => MyCourses(),
+        'addrecipe': (context) => AddRecipe(),
       },
     );
   }
@@ -69,11 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String angryEmot = '';
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    Home(),
-    Search(),
-    History(),
-  ];
+  final List<Widget> _screens = [Home(), Search(), History(), AddRecipe()];
 
   final List<String> _title = ['Home', 'Search', 'History'];
 
@@ -139,12 +137,17 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.popAndPushNamed(context, 'studentlist');
             }),
         ListTile(
-          title: Text("My Course"),
-          leading: Icon(Icons.star_outlined),
-          onTap: () {
-            Navigator.popAndPushNamed(context, 'mycourse');
-          },
-        )
+            title: Text("My Course"),
+            leading: Icon(Icons.star_outlined),
+            onTap: () {
+              Navigator.popAndPushNamed(context, 'mycourse');
+            }),
+        ListTile(
+            title: Text("Add Recipe"),
+            leading: Icon(Icons.add_circle_rounded),
+            onTap: () {
+              Navigator.popAndPushNamed(context, 'addrecipe');
+            })
       ]),
     );
   }
