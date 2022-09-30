@@ -6,6 +6,7 @@ import 'package:hello_world/screen/basket.dart';
 import 'package:hello_world/screen/history.dart';
 import 'package:hello_world/screen/home.dart';
 import 'package:hello_world/screen/my_courses.dart';
+import 'package:hello_world/screen/quiz.dart';
 import 'package:hello_world/screen/search.dart';
 import 'package:hello_world/screen/studentlist.dart';
 
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         'studentlist': (context) => StudentList(),
         'mycourse': (context) => MyCourses(),
         'addrecipe': (context) => AddRecipe(),
+        'quiz': (context) => Quiz(),
       },
     );
   }
@@ -71,7 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
   String angryEmot = '';
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [Home(), Search(), History(), AddRecipe()];
+  final List<Widget> _screens = [
+    Home(),
+    Search(),
+    History(),
+    AddRecipe(),
+    Quiz()
+  ];
 
   final List<String> _title = ['Home', 'Search', 'History'];
 
@@ -147,7 +155,13 @@ class _MyHomePageState extends State<MyHomePage> {
             leading: Icon(Icons.add_circle_rounded),
             onTap: () {
               Navigator.popAndPushNamed(context, 'addrecipe');
-            })
+            }),
+        ListTile(
+            title: Text("Quiz"),
+            leading: Icon(Icons.quiz_outlined),
+            onTap: () {
+              Navigator.popAndPushNamed(context, 'quiz');
+            }),
       ]),
     );
   }
