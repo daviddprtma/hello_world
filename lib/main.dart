@@ -3,15 +3,42 @@ import 'package:flutter/material.dart';
 import 'package:hello_world/screen/about.dart';
 import 'package:hello_world/screen/addrecipe.dart';
 import 'package:hello_world/screen/basket.dart';
+import 'package:hello_world/screen/highscore.dart';
 import 'package:hello_world/screen/history.dart';
 import 'package:hello_world/screen/home.dart';
+import 'package:hello_world/screen/login.dart';
 import 'package:hello_world/screen/my_courses.dart';
 import 'package:hello_world/screen/quiz.dart';
 import 'package:hello_world/screen/search.dart';
 import 'package:hello_world/screen/studentlist.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+String active_user = "";
+
+Future<String> checkUser() async {
+  final prefs = await SharedPreferences.getInstance();
+  String user_id = prefs.getString("user_id") ?? '';
+  return user_id;
+}
 
 void main() {
-  runApp(const MyApp());
+  //runApp(const MyApp());
+
+  WidgetsFlutterBinding.ensureInitialized();
+  checkUser().then((String result) {
+    if (result == '') {
+      runApp(MyLogin());
+    } else {
+      active_user = result;
+      runApp(const MyApp());
+    }
+  });
+}
+
+void doLogout() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove("user_id");
+  main();
 }
 
 class MyApp extends StatelessWidget {
@@ -42,6 +69,7 @@ class MyApp extends StatelessWidget {
         'mycourse': (context) => MyCourses(),
         'addrecipe': (context) => AddRecipe(),
         'quiz': (context) => Quiz(),
+        'highscore': (context) => HighScore(),
       },
     );
   }
@@ -102,68 +130,84 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget myDrawer() {
     return Drawer(
-      elevation: 16.0,
-      child: Column(children: <Widget>[
-        UserAccountsDrawerHeader(
-          accountName: Text("David Pratama"),
-          accountEmail: Text("davidchristianpratama@gmail.com"),
-          currentAccountPicture: CircleAvatar(
-            backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
-          ),
-        ),
-        ListTile(
-          title: Text("Inbox"),
-          leading: Icon(Icons.inbox),
-        ),
-        ListTile(
-          title: Text("My Basket: "),
-          leading: Icon(Icons.shopping_basket),
-          onTap: () {
-            Navigator.popAndPushNamed(context, 'basket');
-          },
-        ),
-        ListTile(
-            title: Text("About"),
-            leading: Icon(Icons.help),
-            onTap: () {
-              // Navigator.push(
-              //     context, MaterialPageRoute(builder: (context) => About()));
+        elevation: 16.0,
+        child: SingleChildScrollView(
+          child: Column(children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text(active_user),
+              accountEmail: Text("davidchristianpratama@gmail.com"),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
+              ),
+            ),
+            ListTile(
+              title: Text("Inbox"),
+              leading: Icon(Icons.inbox),
+            ),
+            ListTile(
+              title: Text("My Basket: "),
+              leading: Icon(Icons.shopping_basket),
+              onTap: () {
+                Navigator.popAndPushNamed(context, 'basket');
+              },
+            ),
+            ListTile(
+                title: Text("About"),
+                leading: Icon(Icons.help),
+                onTap: () {
+                  // Navigator.push(
+                  //     context, MaterialPageRoute(builder: (context) => About()));
 
-              Navigator.popAndPushNamed(context, 'about');
-            }),
-        Divider(
-          color: Colors.pinkAccent,
-          thickness: 1,
-        ),
-        ListTile(
-            title: Text("Student List"),
-            leading: Icon(Icons.account_box),
-            onTap: () {
-              // Navigator.push(
-              //     context, MaterialPageRoute(builder: (context) => About()));
+                  Navigator.popAndPushNamed(context, 'about');
+                }),
+            Divider(
+              color: Colors.pinkAccent,
+              thickness: 1,
+            ),
+            ListTile(
+                title: Text("Student List"),
+                leading: Icon(Icons.account_box),
+                onTap: () {
+                  // Navigator.push(
+                  //     context, MaterialPageRoute(builder: (context) => About()));
 
-              Navigator.popAndPushNamed(context, 'studentlist');
-            }),
-        ListTile(
-            title: Text("My Course"),
-            leading: Icon(Icons.star_outlined),
-            onTap: () {
-              Navigator.popAndPushNamed(context, 'mycourse');
-            }),
-        ListTile(
-            title: Text("Add Recipe"),
-            leading: Icon(Icons.add_circle_rounded),
-            onTap: () {
-              Navigator.popAndPushNamed(context, 'addrecipe');
-            }),
-        ListTile(
-            title: Text("Quiz"),
-            leading: Icon(Icons.quiz_outlined),
-            onTap: () {
-              Navigator.popAndPushNamed(context, 'quiz');
-            }),
-      ]),
-    );
+                  Navigator.popAndPushNamed(context, 'studentlist');
+                }),
+            ListTile(
+                title: Text("My Course"),
+                leading: Icon(Icons.star_outlined),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'mycourse');
+                }),
+            ListTile(
+                title: Text("Add Recipe"),
+                leading: Icon(Icons.add_circle_rounded),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'addrecipe');
+                }),
+            ListTile(
+                title: Text("Quiz"),
+                leading: Icon(Icons.quiz_outlined),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'quiz');
+                }),
+            ListTile(
+                title: Text("High Score"),
+                leading: Icon(Icons.score),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'highscore');
+                }),
+            Divider(
+              color: Colors.black,
+            ),
+            ListTile(
+                title: Text("Logout"),
+                leading: Icon(Icons.logout),
+                onTap: () {
+                  doLogout();
+                }),
+          ]),
+        ));
   }
 
   Widget myBottom() {

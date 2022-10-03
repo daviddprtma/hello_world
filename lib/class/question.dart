@@ -1,6 +1,6 @@
 class QuestionObj {
   String narration;
-  var picture = [];
+  String picture;
   String option_a;
   String option_b;
   String option_c;

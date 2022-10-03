@@ -1,17 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:hello_world/class/question.dart';
+
 import 'dart:async';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 late Timer _timer;
 int _hitung = 0;
 bool _isrun = false;
-int _initValue = 30;
+int _initValue = 10000;
 var _questions = <QuestionObj>[];
 int _question_no = 0;
-int _soal_ke = 0;
 int _point = 0;
-int _round = 0;
 
 class Quiz extends StatefulWidget {
   @override
@@ -20,28 +22,18 @@ class Quiz extends StatefulWidget {
 
 class _QuizState extends State<Quiz> {
   startTimer() {
-    _timer = Timer.periodic(Duration(milliseconds: 2000), (timer) {
+    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
       setState(() {
-        _hitung--;
-        if (_round == _questions[_question_no].picture.length - 1) {
-          _round = 0;
-          _soal_ke++;
-        } else {
-          _round++;
+        _hitung -= 100;
+        if (_hitung <= 0) {
+          checkAnswer("Belum Terjawab");
         }
-
-        if (_soal_ke == 5) {
-          finishAnswer();
-          _hitung = _initValue;
-        }
-
-        _isrun = true;
       });
     });
   }
 
   String formatTime(int hitung) {
-    var secs = _hitung;
+    var secs = _hitung / 1000.0;
     var hours = (hitung ~/ 3600).toString().padLeft(2, '0');
     var minutes = ((hitung % 3600) ~/ 60).toString().padLeft(2, '0');
     var seconds = (hitung % 60).toString().padLeft(2, '0');
@@ -55,9 +47,7 @@ class _QuizState extends State<Quiz> {
     startTimer();
     _questions.add(QuestionObj(
         "Not a member of Avenger ",
-        [
-          'assets/images/hulkhogan.jpg',
-        ],
+        'assets/images/hulkhogan.jpg',
         'Ironman',
         'Spiderman',
         'Thor',
@@ -66,9 +56,7 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "Above the picture who is the actress of Lara Ati? ",
-        [
-          'assets/images/bayuskak.jpg',
-        ],
+        'assets/images/bayuskak.jpg',
         'Michael Jackson',
         'Bayu Skak',
         'Nikita Willy',
@@ -77,9 +65,7 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "What is the title of the actor in the above is correct from Steven Seagul? ",
-        [
-          'assets/images/stevenseagal.jpg',
-        ],
+        'assets/images/stevenseagal.jpg',
         'The Expandables',
         'Despicable Me 2',
         'Cars 3',
@@ -88,9 +74,7 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "Which one is the correct title about the picture in the above?",
-        [
-          'assets/images/minions.jpg',
-        ],
+        'assets/images/minions.jpg',
         'Fast & Furious 7',
         'Now You See Me',
         'Minions 2',
@@ -99,31 +83,19 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "What is the name of the actor in Fast & Furious 7 above in the picture?",
-        [
-          'assets/images/paulwalker.jpg',
-        ],
+        'assets/images/paulwalker.jpg',
         'Vin Diesel',
         'Paul Walker',
         'Caleb Walker',
         'Dwayne Johnson',
         'Paul Walker'));
 
-    _questions.add(QuestionObj(
-        "When cars 3 get released to the film?",
-        [
-          'assets/images/cars.jpeg',
-        ],
-        '2015',
-        '2020',
-        '2013',
-        '2017',
-        '2017'));
+    _questions.add(QuestionObj("When cars 3 get released to the film?",
+        'assets/images/cars.jpeg', '2015', '2020', '2013', '2017', '2017'));
 
     _questions.add(QuestionObj(
         "Guess the name of the actor in Rambo 4",
-        [
-          'assets/images/sylvesterstallone.jpg',
-        ],
+        'assets/images/sylvesterstallone.jpg',
         'Sylvester Stallone',
         'Steven Seagal',
         'Chuck Norris',
@@ -132,9 +104,7 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "Guess the film title of Brad Pitt which he always shown in the movie",
-        [
-          'assets/images/bradpitt.jpg',
-        ],
+        'assets/images/bradpitt.jpg',
         'Athena',
         'World War Z',
         'Lou',
@@ -143,9 +113,7 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "When Turning Red get released above the picture?",
-        [
-          'assets/images/bradpitt.jpg',
-        ],
+        'assets/images/bradpitt.jpg',
         '2019',
         '2020',
         '2021',
@@ -154,16 +122,17 @@ class _QuizState extends State<Quiz> {
 
     _questions.add(QuestionObj(
         "Who's one actor name whose he/she do filming in Love & Gelato? ",
-        [
-          'assets/images/loveandgelato.jpg',
-        ],
+        'assets/images/loveandgelato.jpg',
         'Valentina Lodovini',
         'Taylor Swift',
         'Angelina Jolie',
         'Katty Perry',
         'Valentina Lodovini'));
 
-    _questions.shuffle();
+    _questions = shuffleOrder(_questions);
+    _question_no = 0;
+    _hitung = _initValue;
+    _isrun = false;
     // _questions.add(QuestionObj("Not a member of Teletubbies", 'Dipsy',
     //     'Patrick', 'Laalaa', 'Poo', 'Patrick'));
     // _questions.add(QuestionObj("Not a member of justice league", 'batman',
@@ -180,40 +149,13 @@ class _QuizState extends State<Quiz> {
   void checkAnswer(String answer) {
     setState(() {
       if (answer == _questions[_question_no].answer) {
-        // round 1
-        if (_round == 1) {
-          _point += 100;
-        }
-        // round 2
-        else if (_round == 2) {
-          _point += 75;
-        }
-        // round 3
-        else if (_round == 3) {
-          _point += 60;
-        }
-        // round 4
-        else if (_round == 4) {
-          _point += 55;
-        } else {
-          _point += 40;
-        }
-        _round = 0;
-        _soal_ke++;
-        _question_no++;
-      } else {
-        if (_round == _questions[_question_no].picture.length - 1) {
-          _round = 0;
-          _soal_ke++;
-          _question_no++;
-        } else {
-          _round++;
-        }
+        _point += 100;
       }
+      _question_no++;
+      _hitung = _initValue;
 
-      if (_soal_ke == 5) {
+      if (_question_no > _questions.length - 1) {
         finishAnswer();
-        _hitung = _initValue;
       }
     });
   }
@@ -236,6 +178,22 @@ class _QuizState extends State<Quiz> {
                 ),
               ],
             ));
+  }
+
+  List<QuestionObj> shuffleOrder(List<QuestionObj> questions) {
+    var randomQuiz = Random(DateTime.now().millisecondsSinceEpoch);
+
+    List<QuestionObj> shuffles = [...questions];
+
+    for (int i = shuffles.length - 1; i >= 0; i--) {
+      int rand = randomQuiz.nextInt(i + 1);
+      var temp = shuffles[i];
+
+      shuffles[i] = shuffles[rand];
+      shuffles[rand] = temp;
+    }
+
+    return shuffles;
   }
 
   @override
@@ -261,18 +219,12 @@ class _QuizState extends State<Quiz> {
             ),
             width: MediaQuery.of(context).size.width,
             lineHeight: 20.0,
-            percent: 1.0 - (_hitung / _initValue),
+            percent: min(1 - (_hitung / _initValue), 1),
             backgroundColor: Colors.grey,
             progressColor: Colors.red,
           ),
           Text(_questions[_question_no].narration),
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(_questions[_question_no].picture[_round]),
-            ),
-          ),
+          Image.asset(_questions[_question_no].picture),
           TextButton(
               onPressed: () {
                 checkAnswer(_questions[_question_no].option_a);
