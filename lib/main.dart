@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:hello_world/screen/about.dart';
 import 'package:hello_world/screen/addrecipe.dart';
+import 'package:hello_world/screen/animasi.dart';
 import 'package:hello_world/screen/basket.dart';
 import 'package:hello_world/screen/highscore.dart';
 import 'package:hello_world/screen/history.dart';
@@ -70,6 +71,7 @@ class MyApp extends StatelessWidget {
         'addrecipe': (context) => AddRecipe(),
         'quiz': (context) => Quiz(),
         'highscore': (context) => HighScore(),
+        'animasi': (context) => Animasi(),
       },
     );
   }
@@ -196,6 +198,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.score),
                 onTap: () {
                   Navigator.popAndPushNamed(context, 'highscore');
+                }),
+            ListTile(
+                title: Text("Animation"),
+                leading: Icon(Icons.animation),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'animasi');
                 }),
             Divider(
               color: Colors.black,

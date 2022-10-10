@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:hello_world/class/question.dart';
+import 'package:hello_world/main.dart';
+import 'package:hello_world/screen/highscore.dart';
 
 import 'dart:async';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -14,10 +16,16 @@ int _initValue = 10000;
 var _questions = <QuestionObj>[];
 int _question_no = 0;
 int _point = 0;
+String user_id = "";
 
 class Quiz extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _QuizState();
+}
+
+void userPoint() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt("_point", _point);
 }
 
 class _QuizState extends State<Quiz> {
@@ -132,8 +140,8 @@ class _QuizState extends State<Quiz> {
     _questions = shuffleOrder(_questions);
     _question_no = 0;
     _hitung = _initValue;
-    _isrun = false;
-    // _questions.add(QuestionObj("Not a member of Teletubbies", 'Dipsy',
+    _isrun =
+        false; // _questions.add(QuestionObj("Not a member of Teletubbies", 'Dipsy',
     //     'Patrick', 'Laalaa', 'Poo', 'Patrick'));
     // _questions.add(QuestionObj("Not a member of justice league", 'batman',
     //     'superman', 'flash', 'aquades', 'aquades'));
@@ -167,12 +175,14 @@ class _QuizState extends State<Quiz> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
               title: Text('Quiz'),
-              content: Text('Your point = $_point'),
+              content: Text(
+                  'Your point = $_point and Your username is $active_user'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context, 'OK');
-                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => HighScore()));
                   },
                   child: const Text('OK'),
                 ),

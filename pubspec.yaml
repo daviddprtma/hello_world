@@ -72,6 +72,11 @@ flutter:
      - assets/images/bradpitt.jpg
      - assets/images/turningred.jpg
      - assets/images/loveandgelato.jpg
+     - assets/images/city.jpeg
+     - assets/images/earth.png
+     - assets/images/hulk.jpeg
+     - assets/images/mark.jpeg
+     - assets/images/ufo.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
