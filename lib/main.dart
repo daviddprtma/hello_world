@@ -108,7 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
     Search(),
     History(),
     AddRecipe(),
-    Quiz()
+    Quiz(),
+    HighScore(),
+    const Animasi(),
   ];
 
   final List<String> _title = ['Home', 'Search', 'History'];

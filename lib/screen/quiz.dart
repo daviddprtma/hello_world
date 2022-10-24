@@ -23,9 +23,9 @@ class Quiz extends StatefulWidget {
   State<StatefulWidget> createState() => _QuizState();
 }
 
-void userPoint() async {
+Future<int> userPoint() async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt("_point", _point);
+  return prefs.getInt("_point") ?? 0;
 }
 
 class _QuizState extends State<Quiz> {
@@ -139,9 +139,12 @@ class _QuizState extends State<Quiz> {
 
     _questions = shuffleOrder(_questions);
     _question_no = 0;
-    _hitung = _initValue;
-    _isrun =
-        false; // _questions.add(QuestionObj("Not a member of Teletubbies", 'Dipsy',
+    _isrun = false;
+    userPoint().then((hasil) {
+      if (hasil <= _point) {
+        hasil = _point;
+      }
+    }); // _questions.add(QuestionObj("Not a member of Teletubbies", 'Dipsy',
     //     'Patrick', 'Laalaa', 'Poo', 'Patrick'));
     // _questions.add(QuestionObj("Not a member of justice league", 'batman',
     //     'superman', 'flash', 'aquades', 'aquades'));

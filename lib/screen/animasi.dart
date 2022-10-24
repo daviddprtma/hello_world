@@ -8,7 +8,7 @@ double opacityLevel = 0;
 int _posisi = 1;
 double _left = 0;
 double _top = 0;
-late double _wh;
+double _wh = 0;
 
 Widget widget1() {
   return ElevatedButton(
@@ -29,6 +29,8 @@ Widget widget2() {
 }
 
 class Animasi extends StatefulWidget {
+  const Animasi({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _AnimasiState();
@@ -40,7 +42,7 @@ class _AnimasiState extends State<Animasi> {
   void initState() {
     super.initState();
 
-    _timer = Timer.periodic(Duration(milliseconds: 4000), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 4000), (timer) {
       setState(() {
         animated = !animated;
         opacityLevel = 1 - opacityLevel;
