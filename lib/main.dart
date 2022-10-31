@@ -9,6 +9,8 @@ import 'package:hello_world/screen/history.dart';
 import 'package:hello_world/screen/home.dart';
 import 'package:hello_world/screen/login.dart';
 import 'package:hello_world/screen/my_courses.dart';
+import 'package:hello_world/screen/popularactor.dart';
+import 'package:hello_world/screen/popularmovie.dart';
 import 'package:hello_world/screen/quiz.dart';
 import 'package:hello_world/screen/search.dart';
 import 'package:hello_world/screen/studentlist.dart';
@@ -72,6 +74,8 @@ class MyApp extends StatelessWidget {
         'quiz': (context) => Quiz(),
         'highscore': (context) => HighScore(),
         'animasi': (context) => Animasi(),
+        'popularmovie': (context) => PopularMovie(),
+        'popularactor': (context) => PopularActor(),
       },
     );
   }
@@ -206,6 +210,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.animation),
                 onTap: () {
                   Navigator.popAndPushNamed(context, 'animasi');
+                }),
+            Divider(
+              height: 20,
+              thickness: 4,
+              color: Colors.deepPurple,
+            ),
+            ListTile(
+                title: Text("Popular Movie"),
+                leading: Icon(Icons.movie),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'popularmovie');
+                }),
+            ListTile(
+                title: Text("Popular Actor"),
+                leading: Icon(Icons.recent_actors),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'popularactor');
                 }),
             Divider(
               color: Colors.black,
