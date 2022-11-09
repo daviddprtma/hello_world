@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hello_world/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+String user_id = "";
+String user_password = "";
+String error_login = "";
 
 class MyLogin extends StatelessWidget {
   @override
@@ -26,9 +33,26 @@ class _LoginState extends State<Login> {
   String user_id = "";
 
   void doLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("user_id", user_id);
-    main();
+    final response = await http.post(
+        Uri.parse('https://ubaya.fun/flutter/160419103/login.php'),
+        body: {'user_id': user_id, 'user_password': user_password});
+
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString("user_id", user_id);
+        prefs.setString("user_password", user_password);
+
+        main();
+      } else {
+        setState(() {
+          error_login = "User id atau user password salah";
+        });
+      }
+    } else {
+      throw Exception("Failed to read API");
+    }
   }
 
   @override
@@ -68,8 +92,16 @@ class _LoginState extends State<Login> {
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter secure password'),
+                onChanged: (v) {
+                  user_password = v;
+                },
               ),
             ),
+            if (error_login != "")
+              Text(
+                error_login,
+                style: TextStyle(color: Colors.red),
+              ),
             Padding(
                 padding: EdgeInsets.all(10),
                 child: Container(

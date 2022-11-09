@@ -34,7 +34,7 @@ class _PopularActorState extends State<PopularActor> {
         PAs.add(pa);
       }
       setState(() {
-        _temp = PAs[1].person_name;
+        _temp = PAs[1].person_name.toString();
       });
     });
   }
@@ -56,7 +56,7 @@ class _PopularActorState extends State<PopularActor> {
               ListTile(
                 leading: Icon(Icons.recent_actors, size: 30),
                 title: Text(PAs2[index].person_id.toString()),
-                subtitle: Text(PAs2[index].person_name),
+                subtitle: Text(PAs2[index].person_name.toString()),
               ),
             ],
           ));

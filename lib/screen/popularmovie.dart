@@ -2,14 +2,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hello_world/class/popmovie.dart';
+import 'package:hello_world/screen/detailpop.dart';
 import 'package:http/http.dart' as http;
 
 String _temp = 'Waiting API respond...';
 List<PopMovie> PMs = [];
+String _txtCari = "";
 
 Future<String> fetchData() async {
-  final response =
-      await http.get(Uri.https("ubaya.fun", 'flutter/160419103/movie.php'));
+  final response = await http.post(
+      Uri.parse("https://ubaya.fun/flutter/160419103/movie.php"),
+      body: {'cari': _txtCari});
   if (response.statusCode == 200) {
     return response.body;
   } else {
@@ -33,6 +36,7 @@ class _PopularMovieState extends State<PopularMovie> {
   }
 
   bacaData() {
+    PMs.clear();
     Future<String> data = fetchData();
     data.then((value) {
       Map json = jsonDecode(value);
@@ -42,7 +46,7 @@ class _PopularMovieState extends State<PopularMovie> {
       }
 
       setState(() {
-        _temp = PMs[2].overview;
+        // _temp = PMs[2].overview;
       });
     });
   }
@@ -58,7 +62,17 @@ class _PopularMovieState extends State<PopularMovie> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(Icons.movie, size: 30),
-                  title: Text(popMovs[index].title.toString()),
+                  title: GestureDetector(
+                    child: Text(PMs[index].title),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DetailPop(
+                                    id: PMs[index].movie_id,
+                                  )));
+                    },
+                  ),
                   subtitle: Text(popMovs[index].overview.toString()),
                 ),
               ],
@@ -98,6 +112,14 @@ class _PopularMovieState extends State<PopularMovie> {
     return Scaffold(
         appBar: AppBar(title: const Text('Popular Movie')),
         body: ListView(children: [
+          TextFormField(
+            decoration: const InputDecoration(
+                icon: Icon(Icons.search), labelText: 'Judul mengandung kata'),
+            onFieldSubmitted: (value) {
+              _txtCari = value;
+              bacaData();
+            },
+          ),
           Container(
             height: MediaQuery.of(context).size.height / 2,
             child: DaftarPopMovie(PMs),

@@ -1,18 +1,18 @@
-import 'package:json_annotation/json_annotation.dart';
-part 'pop_actor.g.dart';
-
-@JsonSerializable()
 class PopActor {
-  @JsonKey(name: 'person_id')
-  final int person_id;
-  @JsonKey(name: 'person_name')
-  final String person_name;
+  final int? person_id;
+  final String? person_name;
 
-  PopActor({
-    required this.person_id,
-    required this.person_name,
-  });
+  final List? infocharacter;
 
-  factory PopActor.fromJson(Map<String, dynamic> json) =>
-      _$PopActorFromJson(json);
+  PopActor(
+      {required this.person_id,
+      required this.person_name,
+      required this.infocharacter});
+
+  factory PopActor.fromJson(Map<String, dynamic> json) {
+    return PopActor(
+        person_id: json['person_id'],
+        person_name: json['person_name'],
+        infocharacter: json['infocharacter']);
+  }
 }
