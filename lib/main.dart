@@ -9,6 +9,7 @@ import 'package:hello_world/screen/history.dart';
 import 'package:hello_world/screen/home.dart';
 import 'package:hello_world/screen/login.dart';
 import 'package:hello_world/screen/my_courses.dart';
+import 'package:hello_world/screen/newpopmovie.dart';
 import 'package:hello_world/screen/popularactor.dart';
 import 'package:hello_world/screen/popularmovie.dart';
 import 'package:hello_world/screen/quiz.dart';
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
         'animasi': (context) => Animasi(),
         'popularmovie': (context) => PopularMovie(),
         'popularactor': (context) => PopularActor(),
+        'newpopmovie': (context) => NewPopMovie(),
       },
     );
   }
@@ -227,6 +229,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.recent_actors),
                 onTap: () {
                   Navigator.popAndPushNamed(context, 'popularactor');
+                }),
+            ListTile(
+                title: Text("New Pop Movie"),
+                leading: Icon(Icons.new_releases),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'newpopmovie');
                 }),
             Divider(
               color: Colors.black,
