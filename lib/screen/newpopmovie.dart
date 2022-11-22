@@ -87,16 +87,21 @@ class _NewPopMovieState extends State<NewPopMovie> {
               Padding(
                   padding: EdgeInsets.all(10),
                   child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Overview',
-                    ),
-                    onChanged: (value) {
-                      _overview = value;
-                    },
-                    keyboardType: TextInputType.multiline,
-                    minLines: 3,
-                    maxLines: 6,
-                  )),
+                      decoration: const InputDecoration(
+                        labelText: 'Overview',
+                      ),
+                      onChanged: (value) {
+                        _overview = value;
+                      },
+                      keyboardType: TextInputType.multiline,
+                      minLines: 3,
+                      maxLines: 6,
+                      validator: (value) {
+                        if (value == null || value.length < 10) {
+                          return "Overview harus diisi minimal 10 karakter";
+                        }
+                        return null;
+                      })),
               Padding(
                   padding: EdgeInsets.all(10),
                   child: Row(

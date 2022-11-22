@@ -1,26 +1,35 @@
 import 'package:json_annotation/json_annotation.dart';
-part 'popmovie.g.dart';
 
-@JsonSerializable()
 class PopMovie {
-  @JsonKey(name: 'movie_id')
-  final int movie_id;
-  @JsonKey(name: 'title')
-  final String title;
-  @JsonKey(name: 'overview')
-  final String overview;
-  @JsonKey(name: 'vote_average')
-  final String vote_average;
+  int? movie_id;
+  String? title;
+  String? homepage;
+  String? overview;
+  String? release_date;
+  int? runtime;
+  String? vote_average;
 
   final List? genres;
 
   PopMovie(
       {required this.movie_id,
       required this.title,
+      required this.homepage,
       required this.overview,
+      required this.release_date,
+      required this.runtime,
       required this.vote_average,
       required this.genres});
 
-  factory PopMovie.fromJson(Map<String, dynamic> json) =>
-      _$PopMovieFromJson(json);
+  factory PopMovie.fromJson(Map<String, dynamic> json) {
+    return PopMovie(
+        movie_id: json['movie_id'],
+        title: json['title'],
+        homepage: json['homepage'],
+        overview: json['overview'],
+        release_date: json['release_date'],
+        runtime: json['runtime'],
+        vote_average: json['vote_average'],
+        genres: json['genres']);
+  }
 }

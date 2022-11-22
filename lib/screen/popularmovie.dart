@@ -63,13 +63,13 @@ class _PopularMovieState extends State<PopularMovie> {
                 ListTile(
                   leading: Icon(Icons.movie, size: 30),
                   title: GestureDetector(
-                    child: Text(PMs[index].title),
+                    child: Text(PMs[index].title.toString()),
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => DetailPop(
-                                    id: PMs[index].movie_id,
+                                    id: PMs[index].movie_id!.toInt(),
                                   )));
                     },
                   ),
@@ -99,8 +99,8 @@ class _PopularMovieState extends State<PopularMovie> {
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.movie, size: 30),
-                title: Text(PMs2[index].title),
-                subtitle: Text(PMs2[index].overview),
+                title: Text(PMs2[index].title.toString()),
+                subtitle: Text(PMs2[index].overview.toString()),
               ),
             ],
           ));
