@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hello_world/class/genre.dart';
 import 'package:hello_world/class/popmovie.dart';
 import 'package:hello_world/screen/detailpop.dart';
 import 'package:http/http.dart' as http;

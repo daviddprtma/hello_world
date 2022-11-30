@@ -2,10 +2,10 @@ import 'package:json_annotation/json_annotation.dart';
 
 class PopMovie {
   int? movie_id;
-  String? title;
-  String? homepage;
-  String? overview;
-  String? release_date;
+  String title;
+  String homepage;
+  String overview;
+  String release_date;
   int? runtime;
   String? vote_average;
 

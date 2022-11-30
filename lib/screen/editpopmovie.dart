@@ -3,8 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_world/class/genre.dart';
 import 'package:hello_world/class/popmovie.dart';
+import 'package:hello_world/screen/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:numberpicker/numberpicker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 
 class EditPopMovie extends StatefulWidget {
   int movieID;
@@ -18,6 +23,9 @@ class EditPopMovie extends StatefulWidget {
 
 class EditPopMovieState extends State<EditPopMovie> {
   PopMovie? pm;
+  File? _image;
+  File? _imageProses;
+
   final _formKey = GlobalKey<FormState>();
   TextEditingController _titleCont = TextEditingController();
   TextEditingController _homepageCont = TextEditingController();
@@ -66,6 +74,23 @@ class EditPopMovieState extends State<EditPopMovie> {
       print(response.body);
       Map json = jsonDecode(response.body);
       if (json['result'] == 'success') {
+        if (_imageProses == null) return;
+        List<int> imageBytes = _imageProses!.readAsBytesSync();
+        String base64Image = base64Encode(imageBytes);
+        final response2 = await http.post(
+            Uri.parse(
+                'https://ubaya.fun/flutter/160419103/uploadpopmovieposter.php'),
+            body: {
+              'movie_id': widget.movieID.toString(),
+              'image': base64Image,
+              'user_id': user_id
+            });
+        if (response2.statusCode == 200) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(response2.body)));
+        }
+
         if (!mounted) return;
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Sukses mengubah Data')));
@@ -111,6 +136,30 @@ class EditPopMovieState extends State<EditPopMovie> {
     }
   }
 
+  void deleteGenre(genre_id) async {
+    final response = await http.post(
+        Uri.parse("https://ubaya.fun/flutter/160419103/deletegenre.php"),
+        body: {
+          'genre_id': genre_id.toString(),
+          'movie_id': widget.movieID.toString(),
+        });
+    if (response.statusCode == 200) {
+      // ignore: avoid_print
+      print(response.body);
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sukses menghapus genre')));
+        setState(() {
+          bacaData();
+        });
+      }
+    } else {
+      throw Exception('Failed to read API');
+    }
+  }
+
   Widget comboGenre = Text('tambah genre');
 
   void generateComboGenre() {
@@ -128,7 +177,7 @@ class EditPopMovieState extends State<EditPopMovie> {
           items: genres.map((gen) {
             return DropdownMenuItem(
               child: Column(children: <Widget>[
-                Text(gen.genre_name, overflow: TextOverflow.visible),
+                Text(gen.genre_name.toString(), overflow: TextOverflow.visible),
               ]),
               value: gen.genre_id,
             );
@@ -137,6 +186,80 @@ class EditPopMovieState extends State<EditPopMovie> {
             //memnaggil fungsi menambah genre disini
             addGenre(value);
           });
+    });
+  }
+
+  _imgGaleri() async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50,
+        maxHeight: 600,
+        maxWidth: 600);
+    if (image == null) return;
+    //setState(() {
+    _image = File(image.path);
+    prosesFoto();
+    //});
+  }
+
+  _imgKamera() async {
+    final picker = ImagePicker();
+    final image =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 20);
+    if (image == null) return;
+    //setState(() {
+    _image = File(image.path);
+    prosesFoto();
+    //});
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              color: Colors.white,
+              child: new Wrap(
+                children: <Widget>[
+                  ListTile(
+                      tileColor: Colors.white,
+                      leading: Icon(Icons.photo_library),
+                      title: Text('Galeri'),
+                      onTap: () {
+                        _imgGaleri();
+                        Navigator.of(context).pop();
+                      }),
+                  new ListTile(
+                    leading: Icon(Icons.photo_camera),
+                    title: new Text('Kamera'),
+                    onTap: () {
+                      _imgKamera();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void prosesFoto() {
+    Future<Directory?> extDir = getTemporaryDirectory();
+    extDir.then((value) {
+      String _timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
+      String user_id = '';
+      final String filePath = value!.path + '/${_timestamp()}.jpg';
+      _imageProses = File(filePath);
+      img.Image? temp = img.readJpg(_image!.readAsBytesSync());
+      img.Image temp2 = img.copyResize(temp!, width: 480, height: 640);
+      img.drawString(temp2, img.arial_24, 4, 4, 'Kuliah Flutter',
+          color: img.getColor(250, 100, 100));
+      setState(() {
+        _imageProses?.writeAsBytesSync(img.writeJpg(temp2));
+      });
     });
   }
 
@@ -156,7 +279,8 @@ class EditPopMovieState extends State<EditPopMovie> {
         appBar: AppBar(
           title: Text("Edit Popular Movie"),
         ),
-        body: Form(
+        body: SingleChildScrollView(
+            child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
@@ -258,6 +382,15 @@ class EditPopMovieState extends State<EditPopMovie> {
                   border: Border.all(color: Colors.black26),
                 ),
               ),
+              Padding(
+                  padding: EdgeInsets.all(10),
+                  child: GestureDetector(
+                      onTap: () {
+                        _showPicker(context);
+                      },
+                      child: _imageProses != null
+                          ? Image.file(_imageProses!)
+                          : Image.network("https://ubaya.fun/blank.jpg"))),
 
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -276,18 +409,29 @@ class EditPopMovieState extends State<EditPopMovie> {
               ),
               Padding(padding: EdgeInsets.all(10), child: Text("Genre:")),
               Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: pm!.genres!.length,
-                      itemBuilder: (BuildContext ctxt, int index) {
-                        return Text(pm!.genres![index]['genre_name']);
-                      })),
+                padding: const EdgeInsets.all(10),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: pm?.genres?.length ?? 0,
+                    itemBuilder: (BuildContext ctxt, int index) {
+                      return new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(pm!.genres![index]['genre_name']),
+                            ElevatedButton(
+                                onPressed: () {
+                                  deleteGenre(pm!.genres![index]['genre_id']);
+                                },
+                                child: Text('X'))
+                          ]);
+                    }),
+              ),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: comboGenre),
             ],
           ),
-        ));
+        )));
   }
 }

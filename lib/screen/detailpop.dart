@@ -35,6 +35,14 @@ class _DetailPopState extends State<DetailPop> {
     }
   }
 
+  Future onGoBack(dynamic value) {
+    // print("masuk goback");
+    setState(() {
+      bacaData();
+    });
+    throw Exception("gagal refresh");
+  }
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +70,8 @@ class _DetailPopState extends State<DetailPop> {
           _pm!.title.toString(),
           style: const TextStyle(fontSize: 25),
         ),
+        Image.network(
+            "https://ubaya.fun/flutter/160419103/images/${widget.id}.jpg"),
         Padding(
           padding: const EdgeInsets.all(10),
           child: Text(
@@ -95,9 +105,11 @@ class _DetailPopState extends State<DetailPop> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditPopMovie(movieID: widget.id),
+                    builder: (context) => EditPopMovie(
+                      movieID: widget.id,
+                    ),
                   ),
-                );
+                ).then(onGoBack);
               },
             )),
         ElevatedButton(
