@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPopMovie extends StatefulWidget {
   int movieID;
@@ -32,6 +33,8 @@ class EditPopMovieState extends State<EditPopMovie> {
   TextEditingController _overviewCont = TextEditingController();
   TextEditingController _releaseDate = TextEditingController();
   int _runtime = 100;
+
+  String active_user = "";
 
   Future<String> fetchData() async {
     final response = await http.post(
@@ -57,6 +60,12 @@ class EditPopMovieState extends State<EditPopMovie> {
     } else {
       throw Exception('Failed to read API');
     }
+  }
+
+  Future<String> checkUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String user_id = prefs.getString('user_id') ?? '';
+    return user_id;
   }
 
   void submit() async {
@@ -247,16 +256,24 @@ class EditPopMovieState extends State<EditPopMovie> {
   }
 
   void prosesFoto() {
+    checkUser().then((String result) {
+      active_user = result;
+    });
     Future<Directory?> extDir = getTemporaryDirectory();
     extDir.then((value) {
       String _timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
-      String user_id = '';
+
       final String filePath = value!.path + '/${_timestamp()}.jpg';
       _imageProses = File(filePath);
       img.Image? temp = img.readJpg(_image!.readAsBytesSync());
       img.Image temp2 = img.copyResize(temp!, width: 480, height: 640);
+
+      img.drawString(temp2, img.arial_24, 8, 130, DateTime.now().toString(),
+          color: img.getColor(47, 133, 110));
       img.drawString(temp2, img.arial_24, 4, 4, 'Kuliah Flutter',
           color: img.getColor(250, 100, 100));
+      img.drawString(temp2, img.arial_24, 5, 550, active_user,
+          color: img.getColor(250, 49, 49));
       setState(() {
         _imageProses?.writeAsBytesSync(img.writeJpg(temp2));
       });
