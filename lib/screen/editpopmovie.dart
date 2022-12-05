@@ -147,17 +147,15 @@ class EditPopMovieState extends State<EditPopMovie> {
 
   void deleteGenre(genre_id) async {
     final response = await http.post(
-        Uri.parse("https://ubaya.fun/flutter/160419103/deletegenre.php"),
+        Uri.parse("https://ubaya.fun/flutter/160419103/deletemoviegenre.php"),
         body: {
           'genre_id': genre_id.toString(),
           'movie_id': widget.movieID.toString(),
         });
     if (response.statusCode == 200) {
-      // ignore: avoid_print
       print(response.body);
       Map json = jsonDecode(response.body);
       if (json['result'] == 'success') {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Sukses menghapus genre')));
         setState(() {
@@ -429,19 +427,16 @@ class EditPopMovieState extends State<EditPopMovie> {
                 padding: const EdgeInsets.all(10),
                 child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: pm?.genres?.length ?? 0,
+                    itemCount: pm!.genres!.length,
                     itemBuilder: (BuildContext ctxt, int index) {
-                      return new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(pm!.genres![index]['genre_name']),
-                            ElevatedButton(
-                                onPressed: () {
-                                  deleteGenre(pm!.genres![index]['genre_id']);
-                                },
-                                child: Text('X'))
-                          ]);
+                      return new Row(children: [
+                        Text(pm!.genres![index]['genre_name']),
+                        ElevatedButton(
+                            onPressed: () {
+                              deleteGenre(pm!.genres![index]['genre_id']);
+                            },
+                            child: const Text('X'))
+                      ]);
                     }),
               ),
               Padding(

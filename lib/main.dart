@@ -15,6 +15,7 @@ import 'package:hello_world/screen/popularmovie.dart';
 import 'package:hello_world/screen/quiz.dart';
 import 'package:hello_world/screen/search.dart';
 import 'package:hello_world/screen/studentlist.dart';
+import 'package:hello_world/screen/viewcart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String active_user = "";
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
         'popularmovie': (context) => PopularMovie(),
         'popularactor': (context) => PopularActor(),
         'newpopmovie': (context) => NewPopMovie(),
+        'viewcart': (context) => ViewCart()
       },
     );
   }
@@ -235,6 +237,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 leading: Icon(Icons.new_releases),
                 onTap: () {
                   Navigator.popAndPushNamed(context, 'newpopmovie');
+                }),
+            ListTile(
+                title: Text("View Cart"),
+                leading: Icon(Icons.shopping_basket),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, 'viewcart');
                 }),
             Divider(
               color: Colors.black,

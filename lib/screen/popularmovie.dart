@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hello_world/class/genre.dart';
 import 'package:hello_world/class/popmovie.dart';
+import 'package:hello_world/screen/cart.dart';
 import 'package:hello_world/screen/detailpop.dart';
 import 'package:http/http.dart' as http;
 
 String _temp = 'Waiting API respond...';
 List<PopMovie> PMs = [];
 String _txtCari = "";
+final dbHelper = DatabaseHelper.instance;
 
 Future<String> fetchData() async {
   final response = await http.post(
@@ -52,6 +54,18 @@ class _PopularMovieState extends State<PopularMovie> {
     });
   }
 
+  void addCart(movie_id, title) async {
+    Map<String, dynamic> row = {
+      'movie_id': movie_id,
+      'title': title,
+      'jumlah': 1
+    };
+    await dbHelper.addCart(row);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Sukses manambah barang')));
+  }
+
   Widget DaftarPopMovie(popMovs) {
     if (popMovs != null) {
       return ListView.builder(
@@ -62,20 +76,28 @@ class _PopularMovieState extends State<PopularMovie> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                  leading: Icon(Icons.movie, size: 30),
-                  title: GestureDetector(
-                    child: Text(PMs[index].title.toString()),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DetailPop(
-                                    id: PMs[index].movie_id!.toInt(),
-                                  )));
-                    },
-                  ),
-                  subtitle: Text(popMovs[index].overview.toString()),
-                ),
+                    leading: const Icon(Icons.movie, size: 30),
+                    title: GestureDetector(
+                      child: Text(PMs[index].title.toString()),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailPop(
+                                      id: PMs[index].movie_id!.toInt(),
+                                    )));
+                      },
+                    ),
+                    subtitle: Column(
+                      children: [
+                        Text(PMs[index].overview),
+                        ElevatedButton(
+                            onPressed: () {
+                              addCart(PMs[index].movie_id, PMs[index].title);
+                            },
+                            child: Text("Add to cart"))
+                      ],
+                    )),
               ],
             ));
           });

@@ -5,6 +5,7 @@ import 'package:hello_world/class/pop_actor.dart';
 import 'package:hello_world/class/popmovie.dart';
 import 'package:hello_world/screen/detailmovie2.dart';
 import 'package:hello_world/screen/editpopmovie.dart';
+import 'package:hello_world/screen/popularmovie.dart';
 import 'package:http/http.dart' as http;
 
 class DetailPop extends StatefulWidget {
@@ -56,6 +57,21 @@ class _DetailPopState extends State<DetailPop> {
       _pa = PopActor.fromJson(json['data']);
       setState(() {});
     });
+  }
+
+  void deleteMovie(int id, String title) async {
+    final response = await http
+        .get(Uri.parse("https://ubaya.fun/flutter/160419103/deletemovie.php"));
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        print(id);
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Sukses Menghapus Data ' + title)));
+      }
+    } else {
+      throw Exception('Failed to read API');
+    }
   }
 
   Widget tampilData() {
@@ -114,28 +130,9 @@ class _DetailPopState extends State<DetailPop> {
             )),
         ElevatedButton(
             onPressed: () {
-              showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                        title: Text('Delete Movie'),
-                        content: Text(
-                            "Are you sure you want to delete this movie? "),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailMovie2(id: widget.id))),
-                            child: const Text('OK'),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text("Cancel"))
-                        ],
-                      ));
+              deleteMovie(_pm!.movie_id!.toInt(), _pm!.title);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PopularMovie()));
             },
             child: Text("Delete")),
       ]),
